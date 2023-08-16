@@ -1,0 +1,14 @@
+node_modules
+.embeddings/
+.env
+coverage
+coverage.json
+typechain
+typechain-types
+
+venv/
+
+# Hardhat files
+cache
+artifacts
+
