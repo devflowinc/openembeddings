@@ -10,7 +10,7 @@ const { Monterrey } = require("monterrey");
 const path = require("path");
 const crypto = require("crypto");
 
-const ETH_TOK_EXCHANGE_RATE = 0.000000000000000001;
+const ETH_TOK_EXCHANGE_RATE = ethers.toBigInt(process.env.ETH_TOK_EXCHANGE_RATE || 1);
 const EMBEDDING_SERVICE_URL = process.env.EMBEDDING_SERVICE_URL;
 if (process.env.SALT === undefined) {
   console.warn('No SALT environment variable found, generating a random one');
@@ -44,30 +44,41 @@ const server = http.createServer((req, res) => {
         const parsedData = JSON.parse(data);
         const validatedData = userInputSchema.parse(parsedData);
 
-        fetch(`${EMBEDDING_SERVICE_URL}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ input: validatedData.input }),
+        const tokens = (ethers.toBigInt(validatedData.input.length) / ethers.toBigInt(4)) + ethers.toBigInt(1);
+        const amount = tokens * ETH_TOK_EXCHANGE_RATE;
+        monterrey.debit(validatedData.key, amount).then((success) => {
+          if (!success) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Insufficient funds' }));
+            return;
+          }
+          fetch(`${EMBEDDING_SERVICE_URL}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ input: validatedData.input }),
+          })
+            .then(res => res.json())
+            .then(data => {
+              if (data.status === 200) {
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify(data));
+              } else {
+                res.writeHead(400, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: data }));
+              }
+            });
         })
-          .then(res => res.json())
-          .then(data => {
-            if (data.status === 200) {
-              res.writeHead(200, { 'Content-Type': 'application/json' });
-              res.end(JSON.stringify(data));
-            } else {
-              res.writeHead(400, { 'Content-Type': 'application/json' });
-              res.end(JSON.stringify({ error: data }));
-            }
-          });
+
       } catch (error) {
         if (error instanceof ZodError) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ "error": error.issues }));
         } else {
-          res.writeHead(400, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ error: 'Invalid input data' }));
+          console.log("Error", error);
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: error }));
         }
       }
     });
@@ -82,8 +93,19 @@ const server = http.createServer((req, res) => {
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify({ key: "EMB-" + hat() }));
-  } else if (pathname === "/balance") {
-    return monterrey.balance(query.account);
+  } else if (req.method == "GET" && req.url.startsWith("/balance/")) {
+    const key = req.url.split('/gateway/')[1];
+    return monterrey.getBalance(key).then(balance => {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ balance: ethers.formatEther(balance) }));
+    }).catch(err => {
+      console.log(err)
+      res.statusCode = 500;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ error: err }));
+    });
+
   } else {
     res.writeHead(404, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Route not found' }));
@@ -94,7 +116,7 @@ let monterrey = null;
 Monterrey.create({
   backend: path.join(process.env.HOME, '.embeddings'),
   salt,
-  provider: new ethers.InfuraProvider('mainnet', process.env.INFURA_PROJECT_ID)
+  provider: new ethers.JsonRpcProvider(process.env.RPC_URL),
 }).then(m => {
   monterrey = m;
   monterrey.start(); // return value is an unsubscribe function to stop monterrey
