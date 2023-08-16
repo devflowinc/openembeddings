@@ -18,10 +18,17 @@ if (process.env.SALT === undefined) {
 const salt = process.env.SALT || crypto.randomBytes(32).toString('base64');
 
 // JSON schema validation using Zod
-const userInputSchema = object({
+const encodeInputSchema = object({
   input: string(),
   key: string(),
 });
+
+const validKey = (key) => {
+  if (key.startsWith("EMB-") && key.length == 36) {
+    return true;
+  }
+  return false;
+}
 
 // Create a basic HTTP server
 const server = http.createServer((req, res) => {
@@ -42,7 +49,7 @@ const server = http.createServer((req, res) => {
     req.on('end', () => {
       try {
         const parsedData = JSON.parse(data);
-        const validatedData = userInputSchema.parse(parsedData);
+        const validatedData = encodeInputSchema.parse(parsedData);
 
         const tokens = (ethers.toBigInt(validatedData.input.length) / ethers.toBigInt(4)) + ethers.toBigInt(1);
         const amount = tokens * ETH_TOK_EXCHANGE_RATE;
@@ -84,6 +91,11 @@ const server = http.createServer((req, res) => {
     });
   } else if (req.method == "GET" && req.url.startsWith("/gateway/")) {
     const key = req.url.split('/gateway/')[1];
+    if (!validKey(key)) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Invalid key' }));
+      return;
+    }
     monterrey.generate(key).then(wallet => {
       res.statusCode = 200;
       res.setHeader('Content-Type', 'application/json');
@@ -94,7 +106,13 @@ const server = http.createServer((req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify({ key: "EMB-" + hat() }));
   } else if (req.method == "GET" && req.url.startsWith("/balance/")) {
-    const key = req.url.split('/gateway/')[1];
+    const key = req.url.split('/balance/')[1];
+    if (key && !validKey(key)) {
+      console.log(key.length, key.startsWith("EMB-"));
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Invalid key' }));
+      return;
+    }
     return monterrey.getBalance(key).then(balance => {
       res.statusCode = 200;
       res.setHeader('Content-Type', 'application/json');
