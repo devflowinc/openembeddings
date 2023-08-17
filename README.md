@@ -1,38 +1,61 @@
-# Sample Hardhat Project
+<p align="center">
+  <img height="100" src="https://raw.githubusercontent.com/arguflow/blog/5ef439020707b0e27bf901c8f6b4fb1f487a78d4/apps/frontend/public/assets/horizontal-logo.svg" alt="Arguflow">
+</p>
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+<p align="center">
+    <b>Usage-based pricing to use bge-large-en model privately to create embeddings on your data</b>
+</p>
 
-Try running some of the following tasks:
+**Arguflow OpenEmbedings**: Pay for what use using ETH, USDC/USDT/DAI, or WBTC on Ethereum mainnet to privately encode your data into embeddings using bge-large-en (other models coming soon).
 
-Setup
-```shell
-# Setup .env
-cp .env.didst .env
+<p align="center">
+<strong><a href="https://vault.arguflow.ai">Search Demo</a> • <a href="https://chat.arguflow.ai">Debate Opponent Demo</a> • <a href="https://discord.gg/CuJVfgZf54">Discord</a>
 
-# Setup moneterey db
-mkdir .embeddings
-echo "{}" >> .embeddings/db.json
+</strong>
+</p>
 
-# Setup node
-yarn
+# Arguflow OpenEmbeddings
 
-# Setup python
-python -m venv venv
-. venv/bin/activate
-pip install -r requirements.txt
+## Pricing per 1k-tokens by embedding model
+
+| Model          | USDC/USDT/DAI per 1k-tokens | ETH per 1k-tokens | WBTC per 1k-tokens |
+| -------------- | --------------------------- | ----------------- | ------------------ |
+| `bge-large-en` | 0.00015                     | 0.000000083       | 0.000000006        |
+
+## How to use
+
+### 1. Get your API key
+
+```
+curl https://embeddings.arguflow.ai/key
 ```
 
-Run embedding server
+Expected response will contain a key in the following format: `EMB-09250e7c54e226d30ac3ee06f290c934`
+
+### 2. Get a payment address for your API key
+
+Replace `{key}` with the key you received in the previous step
+
 ```
-yarn embed
+curl https://embeddings.arguflow.ai/gateway/{key}
 ```
 
-Run nodejs server that accepts payments and gates access
+Expected response will contain a valid Ethereum address
+
+### 3. Use your wallet of choice to send ETH, USDC/USDT/DAI, or WBTC
+
+### 4. Check your balance
+
 ```
-yarn start
+curl https://embeddings.arguflow.ai/balance/{key}
 ```
 
-Run example hardhat node
+### 4. Start making embedding vectors
+
 ```
-yarn hardhat node
+curl -X POST https://embeddings.arguflow.ai/encode -H "Content-Type: application/json" -d '{
+  "model": "bge-large-en",
+  "input": "foo foo bar bar foo foo xyz",
+  "key": "{key}"
+}'
 ```
