@@ -129,7 +129,7 @@ const server = http.createServer((req, res) => {
     res.end(JSON.stringify({ error: 'Route not found' }));
   }
 });
-new ethers.InfuraProvider('mainnet', process.env.INFURA_PROJECT_ID);
+
 let monterrey = null;
 Monterrey.create({
   backend: path.join(process.env.HOME, '.embeddings'),
