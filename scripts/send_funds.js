@@ -5,7 +5,7 @@ async function main() {
     let person = accounts[0];
 
     await person.sendTransaction({
-        to: "0x6a48E4240D6b2a823BA311FE123db99587B103e0",
+        to: "0x9796304106e5B756f179dF27933E701e522F040a",
         value: ethers.parseEther("100.0"),
     });
 
