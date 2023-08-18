@@ -135,6 +135,10 @@ Monterrey.create({
   backend: path.join(process.env.HOME, '.embeddings'),
   salt,
   provider: new ethers.JsonRpcProvider(process.env.RPC_URL),
+  ethConversion: ETH_TOK_EXCHANGE_RATE,
+  tokenConversionRate: {
+    '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48': 6666666
+  }
 }).then(m => {
   monterrey = m;
   monterrey.start(); // return value is an unsubscribe function to stop monterrey

@@ -4,10 +4,15 @@ async function main() {
     let accounts = await ethers.getSigners();
     let person = accounts[0];
 
+    let b = await ethers.provider.getBalance("0x52A1B7a7220C4C96AD612AcE9f214df573124F9C");
+    console.log("balance before: ", b.toString());
     await person.sendTransaction({
-        to: "0x9796304106e5B756f179dF27933E701e522F040a",
+        to: "0x52A1B7a7220C4C96AD612AcE9f214df573124F9C",
         value: ethers.parseEther("100.0"),
     });
+
+    b = await ethers.provider.getBalance("0x52A1B7a7220C4C96AD612AcE9f214df573124F9C");
+    console.log("balance after: ", b.toString());
 
 }
 
