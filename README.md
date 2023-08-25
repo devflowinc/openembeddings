@@ -24,8 +24,49 @@
 
 ## How to use
 
-### Python
+### cURL via REST API
 
+#### 1. Get your API key
+
+
+```
+curl https://embeddings.arguflow.ai/key
+```
+
+Expected response will contain a key in the following format: `EMB-09250e7c54e226d30ac3ee06f290c934`
+
+#### 2. Get a payment address for your API key
+
+Replace `{key}` with the key you received in the previous step
+
+```
+curl https://embeddings.arguflow.ai/gateway/{key}
+```
+
+Expected response will contain a valid Ethereum address
+
+#### 3. Use your wallet of choice to send ETH, USDC/USDT/DAI, or WBTC
+
+#### 4. Check your balance
+
+```
+curl https://embeddings.arguflow.ai/balance/{key}
+```
+
+#### 5. Start making embedding vectors
+
+```
+curl -X POST https://embeddings.arguflow.ai/encode -H "Content-Type: application/json" -d '{
+  "model": "bge-large-en",
+  "input": "foo foo bar bar foo foo xyz",
+  "key": "{key}"
+}'
+```
+
+
+### Python Wrapper
+
+We made a very simple python wrapper of our api if you prefer that
 Look in `examples/starter_notebook.ipynb` to see a quick starter notebook or
 
 ```py
@@ -85,43 +126,4 @@ if __name__ == "__main__":
     print(client.get_balance())
 
     embedding = client.create_embedding("Make an embedding for this address", model="bge-large-en")
-```
-
-### cURL
-
-#### 1. Get your API key
-
-
-```
-curl https://embeddings.arguflow.ai/key
-```
-
-Expected response will contain a key in the following format: `EMB-09250e7c54e226d30ac3ee06f290c934`
-
-#### 2. Get a payment address for your API key
-
-Replace `{key}` with the key you received in the previous step
-
-```
-curl https://embeddings.arguflow.ai/gateway/{key}
-```
-
-Expected response will contain a valid Ethereum address
-
-#### 3. Use your wallet of choice to send ETH, USDC/USDT/DAI, or WBTC
-
-#### 4. Check your balance
-
-```
-curl https://embeddings.arguflow.ai/balance/{key}
-```
-
-#### 5. Start making embedding vectors
-
-```
-curl -X POST https://embeddings.arguflow.ai/encode -H "Content-Type: application/json" -d '{
-  "model": "bge-large-en",
-  "input": "foo foo bar bar foo foo xyz",
-  "key": "{key}"
-}'
 ```
