@@ -135,7 +135,7 @@ app.post('/encode', asyncHandler(async (req, res) => {
 		monterrey.credit(data.key, tokens);
 	}
 
-	if (embeddingResponse !== 200) {
+	if (embeddingResponse.status !== 200) {
 		monterrey.credit(data.key, tokens);
 		return res.status(400).json({ error: 'Embedding service error', context: embeddingResponse.status});;
 	}
