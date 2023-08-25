@@ -27,24 +27,46 @@ const validKey = (key) => {
 
 let monterrey = null;
 Monterrey.create({
-	backend: path.join(process.env.HOME, '.embeddings'),
-	salt,
-	provider: RPC_URL ? new ethers.JsonRpcProvider(RPC_URL) : null,
-	ethConversion: ETH_TOK_EXCHANGE_RATE,
-	tokenConversionRate: {
-		'0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48': 6666666
-	}
+  backend: path.join(process.env.HOME, '.embeddings'),
+  salt,
+  provider: process.env.RPC_URL != undefined ? new ethers.JsonRpcProvider(process.env.RPC_URL) : undefined,
+  ethConversion: ETH_TOK_EXCHANGE_RATE,
+  tokenConversionRate: {
+    '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48':
+    {
+      conversionRate: 6666666667000n,
+      decimals: 6n,
+      symbol: 'USDC'
+    },
+    "0xdAC17F958D2ee523a2206206994597C13D831ec7": {
+      conversionRate: 6666666667000n,
+      decimals: 6n,
+      symbol: 'USDT'
+    },
+    "0x6B175474E89094C44Da98b954EedeAC495271d0F": {
+      conversionRate: 6666666667000n,
+      decimals: 18n,
+      symbol: 'DAI'
+    },
+    "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599": {
+      conversionRate: 16666666666700000000n,
+      decimals: 8n,
+      symbol: 'WBTC'
+    },
+  }
 }).then(m => {
-	monterrey = m;
-	monterrey.start(); // return value is an unsubscribe function to stop monterrey
+  monterrey = m;
+  monterrey.start(); // return value is an unsubscribe function to stop monterrey
 
-	monterrey.on('credit', ({ account, amount }) => {
-		console.log('user ' + account + ' balance increases by ' + ethers.formatEther(amount));
-	});
-	monterrey.on('debit', ({ account, amount }) => {
-		console.log('user ' + account + ' balance decreases by ' + ethers.formatEther(amount));
-	});
+  monterrey.on('credit', ({ account, amount }) => {
+    console.log('user ' + account + ' balance increases by ' + ethers.formatEther(amount));
+  });
+  monterrey.on('debit', ({ account, amount }) => {
+    console.log('user ' + account + ' balance decreases by ' + ethers.formatEther(amount));
+  });
 });
+
+
 
 // Start the server
 const PORT = 3000;
