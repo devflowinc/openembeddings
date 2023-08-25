@@ -121,13 +121,19 @@ app.post('/encode', asyncHandler(async (req, res) => {
     return;
   }
 
-  const embeddingResponse = await fetch(`${EMBEDDING_SERVICE_URL}`, {
+  let embeddingResponse;
+  try { 
+   embeddingResponse = await fetch(`${EMBEDDING_SERVICE_URL}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ input: validatedData.input }),
+    body: JSON.stringify({ input: data.input }),
   })
+  } catch (e) {
+		console.log(e);
+    monterrey.credit(data.key, tokens);
+	}
   if (embeddingResponse.status !== 200) {
     res.status(400).json({ error: 'Embedding service error' });
     monterrey.credit(data.key, tokens);
