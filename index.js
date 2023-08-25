@@ -12,6 +12,7 @@ const crypto = require("crypto");
 
 const ETH_TOK_EXCHANGE_RATE = ethers.toBigInt(process.env.ETH_TOK_EXCHANGE_RATE || 1);
 const EMBEDDING_SERVICE_URL = process.env.EMBEDDING_SERVICE_URL;
+const RPC_URL = process.env.RPC_URL;
 if (process.env.SALT === undefined) {
   console.warn('No SALT environment variable found, generating a random one');
 }
@@ -28,7 +29,7 @@ let monterrey = null;
 Monterrey.create({
   backend: path.join(process.env.HOME, '.embeddings'),
   salt,
-  provider: new ethers.JsonRpcProvider(process.env.RPC_URL),
+  provider: RPC_URL? new ethers.JsonRpcProvider(RPC_URL): null,
   ethConversion: ETH_TOK_EXCHANGE_RATE,
   tokenConversionRate: {
     '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48': 6666666
