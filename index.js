@@ -93,6 +93,7 @@ app.get('/gateway/:key', asyncHandler(async (req, res) => {
 const encodeInputSchema = object({
   input: string(),
   key: string(),
+  model: string(),
 });
 
 app.post('/encode', asyncHandler(async (req, res) => {
@@ -125,6 +126,11 @@ app.post('/encode', asyncHandler(async (req, res) => {
     },
     body: JSON.stringify({ input: validatedData.input }),
   })
+  if (embeddingResponse.status !== 200) {
+    res.status(400).json({ error: 'Embedding service error' });
+    monterrey.credit(data.key, tokens);
+    return;
+  }
 
   const json = embeddingResponse.json();
   return res.json(json);
