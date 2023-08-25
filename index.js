@@ -52,6 +52,8 @@ const PORT = 3000;
 const express = require('express')
 const app = express()
 
+app.use(express.json());
+
 function asyncHandler(callback) {
   return function(req, res, next) {
     callback(req, res, next)
@@ -102,7 +104,7 @@ app.post('/encode', asyncHandler(async (req, res) => {
     data = encodeInputSchema.parse(req.body);
   } catch (error) {
     if (error instanceof ZodError) {
-      res.json({ "error": error.issues });
+      res.status(400).json({ "error": error.issues });
     } else {
       throw error;
     }
