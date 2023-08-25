@@ -99,7 +99,7 @@ const encodeInputSchema = object({
 app.post('/encode', asyncHandler(async (req, res) => {
   let data;
   try {
-    data = await encodeInputSchema.parse(req.body);
+    data = encodeInputSchema.parse(req.body);
   } catch (error) {
     if (error instanceof ZodError) {
       res.json({ "error": error.issues });
