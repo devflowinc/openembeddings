@@ -64,6 +64,10 @@ app.get('/', asyncHandler(async (_, res) => {
 
 app.get('/balance/:key', asyncHandler(async (req, res) => {
   const key = req.params.key;
+  if (!validKey(key)) {
+    res.status(400).send('Invalid key');
+    return;
+  }
 
   const balance = await monterrey.getBalance(key);
   return res.json({ balance: balance });
@@ -75,6 +79,10 @@ app.get('/key', asyncHandler(async (_, res) => {
 
 app.get('/gateway/:key', asyncHandler(async (req, res) => {
   const key = req.params.key;
+  if (!validKey(key)) {
+    res.status(400).send('Invalid key');
+    return;
+  }
 
   const wallet = await monterrey.generate(key);
   return res.json({ address: wallet.address });
