@@ -71,7 +71,7 @@ app.get('/balance/:key', asyncHandler(async (req, res) => {
   }
 
   const balance = await monterrey.getBalance(key);
-  return res.json({ balance: balance });
+  return res.json({ balance: ethers.formatEther(balance) });
 }))
 
 app.get('/key', asyncHandler(async (_, res) => {
