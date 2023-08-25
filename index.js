@@ -3,7 +3,7 @@ const url = require('url');
 const { parse } = require('querystring');
 const { object, string, number, ZodError } = require('zod');
 const ethers = require('ethers');
-const const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require('uuid');
 require('dotenv').config();
 
 const { Monterrey } = require("monterrey");
