@@ -17,7 +17,7 @@
     "ethers": "^6.7.1",
     "hardhat": "^2.17.1",
     "hat": "^0.0.3",
-    "monterrey": "https://github.com/kungfuflex/monterrey",
+    "monterrey": "https://github.com/arguflow/monterrey",
     "zod": "^3.22.1"
   },
   "devDependencies": {
