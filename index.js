@@ -3,7 +3,7 @@ const url = require('url');
 const { parse } = require('querystring');
 const { object, string, number, ZodError } = require('zod');
 const ethers = require('ethers');
-const hat = require('hat');
+const const { v4: uuidv4 } = require('uuid');
 require('dotenv').config();
 
 const { Monterrey } = require("monterrey");
@@ -19,7 +19,7 @@ if (process.env.SALT === undefined) {
 const salt = process.env.SALT || crypto.randomBytes(32).toString('base64');
 
 const validKey = (key) => {
-	if (key.startsWith("EMB-") && key.length == 36) {
+	if (key.startsWith("EMB-") && key.length == 40) {
 		return true;
 	}
 	return false;
@@ -99,7 +99,7 @@ app.get('/balance/:key', asyncHandler(async (req, res) => {
 }))
 
 app.get('/key', asyncHandler(async (_, res) => {
-	return res.json({ key: "EMB-" + hat() });
+	return res.json({ key: "EMB-" + uuidv4() });
 }))
 
 app.get('/gateway/:key', asyncHandler(async (req, res) => {
@@ -126,7 +126,7 @@ app.post('/encode', asyncHandler(async (req, res) => {
 		data = encodeInputSchema.parse(req.body);
 	} catch (error) {
 		if (error instanceof ZodError) {
-			res.status(400).json({ "error": error.issues });
+			return res.status(400).json({ "error": error.issues });
 		} else {
 			throw error;
 		}
