@@ -28,7 +28,7 @@ def health():
 class EncodeRequest(BaseModel):
     input: str
 
-@app.post("/")
+@app.post("/encode")
 async def encode(encodingRequest: EncodeRequest):
     encoded_input = tokenizer(
         encodingRequest.input,

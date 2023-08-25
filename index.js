@@ -140,7 +140,7 @@ app.post('/encode', asyncHandler(async (req, res) => {
 		return res.status(400).json({ error: 'Embedding service error', context: embeddingResponse.status});;
 	}
 
-	const json = embeddingResponse.json();
+	const json = await embeddingResponse.json();
 	return res.json(json);
 
 }));
