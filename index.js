@@ -115,7 +115,7 @@ app.post('/encode', asyncHandler(async (req, res) => {
 		return;
 	}
 
-	const success = await monterrey.debit(data.key, ethers.parseEther(tokens))
+	const success = await monterrey.debit(data.key, ethers.parseEther('' + tokens))
 	if (!success) {
 		res.status(400).json({ error: 'Insufficient funds' });
 		return;
@@ -132,19 +132,19 @@ app.post('/encode', asyncHandler(async (req, res) => {
 		})
 	} catch (e) {
 		console.log(e);
-		monterrey.credit(data.key, ethers.parseEther(tokens));
+		monterrey.credit(data.key, ethers.parseEther('' + tokens));
 	}
 
 	if (embeddingResponse.status !== 200) {
 		monterrey.credit(data.key, tokens);
-		return res.status(400).json({ error: 'Embedding service error', context: embeddingResponse.status});;
+		return res.status(400).json({ error: 'Embedding service error', context: embeddingResponse.status });;
 	}
 
 	const json = await embeddingResponse.json();
 	if (json.hasOwnProperty('embeddings')) {
 		return res.json({ embeddings: json.embeddings });
 	} else {
-		monterrey.credit(data.key, ethers.parseEther(tokens));
+		monterrey.credit(data.key, ethers.parseEther('' + tokens));
 		return res.json(json);
 	}
 
