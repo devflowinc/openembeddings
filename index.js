@@ -83,9 +83,9 @@ function asyncHandler(callback) {
 	}
 }
 
-app.get('/', asyncHandler(async (_, res) => {
-	res.send('Hello World!')
-}))
+app.get('/', (_, res) => {
+    res.redirect('https://github.com/arguflow/openembeddings');
+});
 
 app.get('/balance/:key', asyncHandler(async (req, res) => {
 	const key = req.params.key;
