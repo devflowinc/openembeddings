@@ -20,9 +20,9 @@ model = AutoModel.from_pretrained("BAAI/bge-large-en")
 model.to(device)
 # Tokenize sentences
 
-@app.route("/")
-def health():
-    return "hello", 200
+@app.get("/")
+async def health():
+    return {"message": "hello embeddings" }
 
 
 class EncodeRequest(BaseModel):
